@@ -5,4 +5,5 @@ import java.util.UUID
 
 interface BetJpaRepository : JpaRepository<BetJpaEntity, UUID> {
     fun findByEventId(eventId: Long): List<BetJpaEntity>
+    fun findByUserId(userId: UUID): List<BetJpaEntity>
 }

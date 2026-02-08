@@ -25,35 +25,39 @@ Three users are pre-seeded with 100 EUR each:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/events?sessionType=&year=&country=` | List F1 events with driver market and odds |
+| GET | `/api/events?sessionType=&year=&country=&page=&size=` | List F1 events with driver market and odds (paginated) |
 | POST | `/api/bets` | Place a bet on a driver |
+| GET | `/api/bets?userId=&eventId=&status=` | List bets (all filters optional) |
 | POST | `/api/event-outcomes` | Settle an event with the winning driver |
+| GET | `/api/event-outcomes/{eventId}` | Get settlement result for an event |
+| GET | `/api/users` | List all users with balances |
+| GET | `/api/users/{userId}` | Get a single user with balance |
 
 ## Testing Walkthrough
 
-**1. List events** — find a race and pick a driver:
+Or just use Swagger UI at `http://localhost:8080/swagger-ui.html` — all request bodies have pre-filled examples.
 
 ```bash
-curl http://localhost:8080/api/events?year=2024&sessionType=Race&country=Monaco
-```
+# 1. Browse events — pick a race and a driver from the market
+curl "http://localhost:8080/api/events?year=2024&sessionType=Race&country=Monaco"
 
-**2. Place a bet** — bet 25 EUR on Charles Leclerc (driver 16) at odds 3:
-
-```bash
+# 2. Place a bet (25 EUR on driver 16 at odds 3)
 curl -X POST http://localhost:8080/api/bets \
   -H "Content-Type: application/json" \
   -d '{"userId":"00000000-0000-0000-0000-000000000001","eventId":9523,"driverId":16,"amount":25,"odds":3}'
-```
 
-**3. Settle the event** — Leclerc wins:
+# 3. Verify: balance dropped from 100 to 75
+curl http://localhost:8080/api/users/00000000-0000-0000-0000-000000000001
 
-```bash
+# 4. Settle the event — driver 16 wins
 curl -X POST http://localhost:8080/api/event-outcomes \
   -H "Content-Type: application/json" \
   -d '{"eventId":9523,"winnerDriverId":16}'
-```
 
-The user's balance is now `75 (remaining) + 75 (25 * 3 odds) = 150 EUR`.
+# 5. Verify: bet status is WON, balance is 150 (75 + 25*3)
+curl "http://localhost:8080/api/bets?eventId=9523"
+curl http://localhost:8080/api/users/00000000-0000-0000-0000-000000000001
+```
 
 ## Running Tests
 
@@ -97,7 +101,6 @@ The domain layer is pure Kotlin with no Spring imports. Business rules live in t
 
 - **Concurrency** — add optimistic locking (`@Version`) on `User` to handle concurrent balance updates
 - **Caching** — cache OpenF1 API responses (sessions rarely change mid-season) to reduce latency and external API load
-- **Pagination** — paginate the events endpoint for large result sets
 - **Authentication** — add JWT or session-based auth instead of passing user IDs in requests
 - **Async settlement** — process bet settlement asynchronously via events/message queue for better throughput
 - **Integration tests** — use Testcontainers for PostgreSQL to test the full persistence layer

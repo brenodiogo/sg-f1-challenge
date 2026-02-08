@@ -4,6 +4,7 @@ import com.sgchallenge.f1.domain.model.User
 import java.util.UUID
 
 interface UserRepository {
+    fun findAll(): List<User>
     fun findById(id: UUID): User?
     fun save(user: User): User
 }

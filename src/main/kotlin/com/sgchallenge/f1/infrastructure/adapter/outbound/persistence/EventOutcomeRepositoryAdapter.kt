@@ -12,6 +12,9 @@ class EventOutcomeRepositoryAdapter(
     override fun save(outcome: EventOutcome): EventOutcome =
         jpa.save(outcome.toEntity()).toDomain()
 
+    override fun findByEventId(eventId: Long): EventOutcome? =
+        jpa.findById(eventId).orElse(null)?.toDomain()
+
     override fun existsByEventId(eventId: Long): Boolean =
         jpa.existsByEventId(eventId)
 }

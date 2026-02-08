@@ -10,6 +10,9 @@ class UserRepositoryAdapter(
     private val jpa: UserJpaRepository
 ) : UserRepository {
 
+    override fun findAll(): List<User> =
+        jpa.findAll().map { it.toDomain() }
+
     override fun findById(id: UUID): User? =
         jpa.findById(id).orElse(null)?.toDomain()
 
