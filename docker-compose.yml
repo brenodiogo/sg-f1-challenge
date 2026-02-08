@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: f1betting
+      POSTGRES_USER: f1betting
+      POSTGRES_PASSWORD: f1betting
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U f1betting"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: f1betting
+      DB_USERNAME: f1betting
+      DB_PASSWORD: f1betting
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
