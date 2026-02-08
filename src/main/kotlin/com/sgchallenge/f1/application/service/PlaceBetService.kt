@@ -16,6 +16,11 @@ class PlaceBetService(
     private val betRepository: BetRepository
 ) : PlaceBetUseCase {
 
+    // This is a fairly long transaction that can be improved.
+    // For example, we can keep just 2 DB calls in the transaction, like:
+    // userRepository.save(debitedUser) and betRepository.save(bet).
+    // Both need to be in transaction for us to avoid concurrency issues.
+    // However, I do not want to optimize too much for this simple exercise.
     @Transactional
     override fun placeBet(userId: UUID, eventId: Long, driverId: Int, amount: BigDecimal, odds: Int): Bet {
         val user = userRepository.findById(userId) ?: throw UserNotFoundException(userId)

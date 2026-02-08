@@ -10,6 +10,9 @@ spring:
   flyway:
     enabled: true
 
+openf1:
+  base-url: https://api.openf1.org/v1
+
 management:
   endpoints:
     web:

@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: f1betting
       POSTGRES_PASSWORD: f1betting
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +18,7 @@ services:
   app:
     build: .
     ports:
-      - "8081:8080"
+      - "8080:8080"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
