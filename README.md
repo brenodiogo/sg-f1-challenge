@@ -65,6 +65,8 @@ curl http://localhost:8080/api/users/00000000-0000-0000-0000-000000000001
 ./gradlew test
 ```
 
+Includes unit tests (domain + services) and integration tests (Testcontainers PostgreSQL). Docker must be running for the integration tests.
+
 ## Architecture
 
 The project follows **hexagonal architecture** (ports and adapters) with strict layer separation:
@@ -103,5 +105,4 @@ The domain layer is pure Kotlin with no Spring imports. Business rules live in t
 - **Caching** — cache OpenF1 API responses (sessions rarely change mid-season) to reduce latency and external API load
 - **Authentication** — add JWT or session-based auth instead of passing user IDs in requests
 - **Async settlement** — process bet settlement asynchronously via events/message queue for better throughput
-- **Integration tests** — use Testcontainers for PostgreSQL to test the full persistence layer
 - **Observability** — structured logging, distributed tracing, metrics export
